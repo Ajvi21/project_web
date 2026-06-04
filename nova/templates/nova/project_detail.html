@@ -1,0 +1,186 @@
+{% extends "nova/base.html" %}
+
+{% block title %}Nova Build | {{ project.name }}{% endblock %}
+
+{% block content %}
+<section class="page-hero small-hero">
+  <div class="container text-center">
+    <span class="section-kicker">{{ project.get_status_display }}</span>
+    <h1>{{ project.name }}</h1>
+  </div>
+</section>
+
+<main class="section-padding bg-light-custom">
+  <div class="container">
+    <div class="row g-4">
+      <!-- Left column: cover + metadata -->
+      <div class="col-lg-4">
+        <div class="content-panel">
+          {% if project.cover %}
+            <img src="{{ project.cover.url }}" alt="{{ project.name }}" class="img-fluid rounded mb-3" style="height: 320px; object-fit: cover; width: 100%;">
+          {% endif %}
+          <h2 class="h4">{{ project.name }}</h2>
+          <ul class="project-meta">
+            <li>Lokacion: {{ project.location }}</li>
+            <li>Tipologji: {{ project.get_category_display }}</li>
+            <li>Status: {{ project.get_status_display }}</li>
+            <li>Vit: {{ project.year }}</li>
+            {% if project.floor_area_m2 %}<li>Sipërfaqe: {{ project.floor_area_m2 }} m²</li>{% endif %}
+            <li>
+              Vlerësimi mesatar:
+              {% if project.rating_count %}
+                {{ project.avg_rating|floatformat:1 }}/5 ({{ project.rating_count }} vlerësime)
+              {% else %}
+                Nuk ka vlerësime ende
+              {% endif %}
+            </li>
+          </ul>
+
+          {% if user.is_staff %}
+            <div class="d-flex gap-2 mt-3">
+              <a href="{% url 'project-update' project.pk %}" class="btn btn-outline-secondary w-100">Edito</a>
+              <a href="{% url 'project-delete' project.pk %}" class="btn btn-outline-danger w-100">Fshi</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Right column: description, gallery, ratings, comments -->
+      <div class="col-lg-8">
+        <div class="content-panel mb-4">
+          <h3>Përshkrimi</h3>
+          <p>{{ project.description|linebreaks }}</p>
+        </div>
+
+        <!-- Gallery -->
+        <div class="content-panel mb-4">
+          <h3 class="mb-3">Galeria</h3>
+          {% if project.gallery_images.all %}
+            <div class="row g-3 mb-3">
+              {% for img in project.gallery_images.all %}
+                <div class="col-md-4">
+                  <div class="card h-100 shadow-sm">
+                    <img src="{{ img.image.url }}" alt="{{ img.caption|default:'Foto e galerisë' }}" class="card-img-top" style="height: 180px; object-fit: cover;">
+                    <div class="card-body p-2">
+                      <p class="small text-muted mb-2">{{ img.caption|default:"Pa përshkrim" }}</p>
+                      {% if user.is_staff %}
+                        <form method="post" action="{% url 'project-image-delete' img.pk %}">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-sm btn-outline-danger w-100"
+                                  onclick="return confirm('A je i sigurt që do të fshish këtë foto?');">Hiq</button>
+                        </form>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-muted">Nuk ka foto në galeri ende.</p>
+          {% endif %}
+
+          {% if user.is_staff %}
+            <hr>
+            <h6>Shto foto në galeri</h6>
+            <form method="post" action="{% url 'project-image-add' project.pk %}" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="mb-2">{{ image_form.image }}</div>
+              <div class="mb-2">{{ image_form.caption }}</div>
+              <button type="submit" class="btn btn-gold btn-sm">Ngarko foton</button>
+            </form>
+          {% endif %}
+        </div>
+
+        <!-- Ratings -->
+        <div class="content-panel mb-4">
+          <h3 class="mb-3">Vlerësimet</h3>
+          {% if user.is_authenticated %}
+            <div class="row g-2 align-items-end mb-3">
+              <div class="col-md-8">
+                <form method="post" action="{% url 'project-review' project.pk %}" class="row g-2 align-items-end">
+                  {% csrf_token %}
+                  <div class="col-md-8">
+                    <label class="form-label">Vlerësimi yt</label>
+                    {{ review_form.stars }}
+                  </div>
+                  <div class="col-md-4">
+                    <button type="submit" class="btn btn-gold w-100">Ruaj vlerësimin</button>
+                  </div>
+                </form>
+              </div>
+              {% if user_review %}
+                <div class="col-md-4">
+                  <form method="post" action="{% url 'project-review-delete' user_review.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger w-100">Fshi vlerësimin tim</button>
+                  </form>
+                </div>
+              {% endif %}
+            </div>
+          {% else %}
+            <p class="mb-3"><a href="{% url 'login' %}?next={{ request.path }}">Kyçu</a> për të vlerësuar këtë projekt.</p>
+          {% endif %}
+
+          {% if project.reviews.all %}
+            <ul class="list-group list-group-flush">
+              {% for review in project.reviews.all %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span><strong>{{ review.user.username }}</strong> vlerësoi {{ review.stars }}/5</span>
+                  {% if user == review.user or user.is_staff %}
+                    <form method="post" action="{% url 'project-review-delete' review.pk %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-sm btn-outline-danger">Fshi</button>
+                    </form>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted mb-0">Nuk ka vlerësime ende.</p>
+          {% endif %}
+        </div>
+
+        <!-- Comments -->
+        <div class="content-panel">
+          <h3 class="mb-3">Komentet</h3>
+          {% if project.project_comments.all %}
+            <div class="mb-4">
+              {% for comment in project.project_comments.all %}
+                <div class="border rounded p-3 mb-2">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <small class="text-muted">
+                      <strong>{{ comment.user.username }}</strong> • {{ comment.created_at|date:"d M Y, H:i" }}
+                    </small>
+                    {% if user == comment.user or user.is_staff %}
+                      <div class="d-flex gap-2">
+                        <a href="{% url 'project-comment-edit' comment.pk %}" class="btn btn-sm btn-outline-secondary">Edito</a>
+                        <form method="post" action="{% url 'project-comment-delete' comment.pk %}">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-sm btn-outline-danger">Fshi</button>
+                        </form>
+                      </div>
+                    {% endif %}
+                  </div>
+                  <p class="mb-0">{{ comment.content|linebreaks }}</p>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-muted">Asnjë koment ende.</p>
+          {% endif %}
+
+          {% if user.is_authenticated %}
+            <form method="post" action="{% url 'project-comment-add' project.pk %}">
+              {% csrf_token %}
+              <div class="mb-2">{{ comment_form.content }}</div>
+              <button type="submit" class="btn btn-gold">Shto koment</button>
+            </form>
+          {% else %}
+            <p class="mb-0"><a href="{% url 'login' %}?next={{ request.path }}">Kyçu</a> për të lënë një koment.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

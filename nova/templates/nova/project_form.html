@@ -1,0 +1,90 @@
+{% extends "nova/base.html" %}
+
+{% block title %}Nova Build | {% if form.instance.pk %}Edito projektin{% else %}Shto projekt{% endif %}{% endblock %}
+
+{% block content %}
+<section class="page-hero small-hero">
+  <div class="container text-center">
+    <span class="section-kicker">Menaxhim projektesh</span>
+    <h1>{% if form.instance.pk %}Edito projektin{% else %}Shto një projekt të ri{% endif %}</h1>
+  </div>
+</section>
+
+<main class="section-padding bg-light-custom">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        <div class="content-panel">
+          <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <div class="mb-3">
+              <label class="form-label">Emri i projektit</label>
+              {{ form.name }}
+              {% if form.name.errors %}<div class="text-danger small">{{ form.name.errors }}</div>{% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Përshkrimi</label>
+              {{ form.description }}
+              {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Lokacioni</label>
+                {{ form.location }}
+                {% if form.location.errors %}<div class="text-danger small">{{ form.location.errors }}</div>{% endif %}
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Kategoria</label>
+                {{ form.category }}
+                {% if form.category.errors %}<div class="text-danger small">{{ form.category.errors }}</div>{% endif %}
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Statusi</label>
+                {{ form.status }}
+                {% if form.status.errors %}<div class="text-danger small">{{ form.status.errors }}</div>{% endif %}
+              </div>
+            </div>
+
+            <div class="row g-3 mt-1">
+              <div class="col-md-3">
+                <label class="form-label">Viti</label>
+                {{ form.year }}
+                {% if form.year.errors %}<div class="text-danger small">{{ form.year.errors }}</div>{% endif %}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Sipërfaqe (m²)</label>
+                {{ form.floor_area_m2 }}
+                {% if form.floor_area_m2.errors %}<div class="text-danger small">{{ form.floor_area_m2.errors }}</div>{% endif %}
+              </div>
+              <div class="col-md-5">
+                <label class="form-label">Foto kryesore</label>
+                {{ form.cover }}
+                {% if form.cover.errors %}<div class="text-danger small">{{ form.cover.errors }}</div>{% endif %}
+              </div>
+            </div>
+
+            {% if form.instance.pk and form.instance.cover %}
+              <div class="mt-3 mb-3">
+                <small class="text-muted d-block mb-2">Foto aktuale:</small>
+                <img src="{{ form.instance.cover.url }}" alt="Foto aktuale" style="max-height: 220px;" class="img-thumbnail">
+              </div>
+            {% endif %}
+
+            <div class="d-flex justify-content-between mt-4">
+              <a href="{% if form.instance.pk %}{% url 'project-detail' form.instance.pk %}{% else %}{% url 'project-list' %}{% endif %}" class="btn btn-outline-secondary">Anulo</a>
+              <button type="submit" class="btn btn-gold px-4">Ruaj projektin</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

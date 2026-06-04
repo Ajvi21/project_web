@@ -1,0 +1,26 @@
+{% extends "nova/base.html" %}
+
+{% block title %}Nova Build | Fshi projektin{% endblock %}
+
+{% block content %}
+<main class="section-padding bg-light-custom" style="min-height: 60vh;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="content-panel border border-danger">
+          <h2 class="text-danger">Fshi projektin</h2>
+          <p>A je i sigurt që do të fshish projektin <strong>{{ object.name }}</strong>?</p>
+          <p class="text-muted mb-4">Ky veprim do të heqë edhe galerinë, vlerësimet dhe komentet e lidhura me të.</p>
+          <form method="post">
+            {% csrf_token %}
+            <div class="d-flex gap-2">
+              <a href="{% url 'project-detail' object.pk %}" class="btn btn-outline-secondary">Anulo</a>
+              <button type="submit" class="btn btn-danger">Po, fshije</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

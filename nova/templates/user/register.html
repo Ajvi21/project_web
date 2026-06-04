@@ -1,0 +1,53 @@
+{% extends "nova/base.html" %}
+
+{% block title %}Nova Build | Regjistrohu{% endblock %}
+
+{% block content %}
+<main class="section-padding bg-light-custom" style="min-height: 70vh;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="content-panel">
+          <h2 class="text-center mb-4">Krijo një llogari</h2>
+
+          {% if form.errors %}
+            <div class="alert alert-danger">
+              {% for field, errors in form.errors.items %}
+                {% for error in errors %}<p class="mb-1">{{ error }}</p>{% endfor %}
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-12">
+                <label for="{{ form.username.id_for_label }}" class="form-label">Përdoruesi</label>
+                <input type="text" name="username" id="{{ form.username.id_for_label }}" class="form-control" required autofocus>
+              </div>
+              <div class="col-12">
+                <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                <input type="email" name="email" id="{{ form.email.id_for_label }}" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label for="{{ form.password1.id_for_label }}" class="form-label">Fjalëkalimi</label>
+                <input type="password" name="password1" id="{{ form.password1.id_for_label }}" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label for="{{ form.password2.id_for_label }}" class="form-label">Konfirmo fjalëkalimin</label>
+                <input type="password" name="password2" id="{{ form.password2.id_for_label }}" class="form-control" required>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-gold w-100 mt-4 py-2">Regjistrohu</button>
+          </form>
+
+          <div class="mt-4 text-center">
+            <p class="mb-0">Ke tashmë një llogari?</p>
+            <a href="{% url 'login' %}" class="btn btn-outline-secondary mt-2">Kyçu</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "nova/base.html" %}
+
+{% block title %}Nova Build | {{ post.title }}{% endblock %}
+
+{% block content %}
+<main class="section-padding bg-light-custom">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        <article class="content-panel mb-4">
+          <h1>{{ post.title }}</h1>
+          <p class="text-muted">Postuar nga {{ post.author }} më {{ post.date_posted|date:"d F Y, H:i" }}</p>
+          <div>{{ post.content|linebreaks }}</div>
+
+          {% if user == post.author %}
+            <div class="mt-3 d-flex gap-2">
+              <a href="{% url 'news-update' post.pk %}" class="btn btn-sm btn-outline-secondary">Edito</a>
+              <a href="{% url 'news-delete' post.pk %}" class="btn btn-sm btn-outline-danger">Fshi</a>
+            </div>
+          {% endif %}
+        </article>
+
+        <!-- Comments -->
+        <div class="content-panel">
+          <h3>Komentet</h3>
+
+          {% for comment in post.comments.all %}
+            <div class="border rounded p-3 mb-2">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <small class="text-muted">
+                  <strong>{{ comment.author }}</strong> • {{ comment.date_commented|timesince }} më parë
+                </small>
+                {% if user == comment.author or user.is_staff %}
+                  <form method="post" action="{% url 'news-comment-delete' comment.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Fshi</button>
+                  </form>
+                {% endif %}
+              </div>
+              <p class="mb-0">{{ comment.content|linebreaks }}</p>
+            </div>
+          {% empty %}
+            <p class="text-muted">Ende pa komente. Bëhu i pari!</p>
+          {% endfor %}
+
+          {% if user.is_authenticated %}
+            <hr>
+            <h5>Shto një koment</h5>
+            <form method="post" action="{% url 'news-comment-add' post.pk %}">
+              {% csrf_token %}
+              <div class="mb-2">{{ comment_form.content }}</div>
+              <button type="submit" class="btn btn-gold">Posto komentin</button>
+            </form>
+          {% else %}
+            <div class="alert alert-info mb-0">
+              <a href="{% url 'login' %}?next={{ request.path }}">Kyçu</a> për të lënë një koment.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

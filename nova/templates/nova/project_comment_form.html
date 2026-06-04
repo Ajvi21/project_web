@@ -1,0 +1,29 @@
+{% extends "nova/base.html" %}
+
+{% block title %}Nova Build | Edito komentin{% endblock %}
+
+{% block content %}
+<main class="section-padding bg-light-custom" style="min-height: 60vh;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="content-panel">
+          <h2>Edito komentin</h2>
+          <p class="text-muted">Projekti: <strong>{{ project.name }}</strong></p>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+              {{ form.content }}
+              {% if form.content.errors %}<div class="text-danger small mt-1">{{ form.content.errors }}</div>{% endif %}
+            </div>
+            <div class="d-flex gap-2">
+              <a href="{% url 'project-detail' project.pk %}" class="btn btn-outline-secondary">Anulo</a>
+              <button type="submit" class="btn btn-gold">Përditëso komentin</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

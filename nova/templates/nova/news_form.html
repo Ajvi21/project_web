@@ -1,0 +1,34 @@
+{% extends "nova/base.html" %}
+
+{% block title %}Nova Build | {% if form.instance.pk %}Edito lajmin{% else %}Lajm i ri{% endif %}{% endblock %}
+
+{% block content %}
+<main class="section-padding bg-light-custom" style="min-height: 70vh;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="content-panel">
+          <h2 class="mb-4">{% if form.instance.pk %}Edito lajmin{% else %}Publiko një lajm të ri{% endif %}</h2>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label">Titulli</label>
+              {{ form.title }}
+              {% if form.title.errors %}<div class="text-danger small mt-1">{{ form.title.errors }}</div>{% endif %}
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Përmbajtja</label>
+              {{ form.content }}
+              {% if form.content.errors %}<div class="text-danger small mt-1">{{ form.content.errors }}</div>{% endif %}
+            </div>
+            <div class="d-flex justify-content-between">
+              <a href="{% url 'news-list' %}" class="btn btn-outline-secondary">Anulo</a>
+              <button type="submit" class="btn btn-gold">Ruaj lajmin</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

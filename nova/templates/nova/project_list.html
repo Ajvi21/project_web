@@ -1,0 +1,65 @@
+{% extends "nova/base.html" %}
+
+{% block title %}Nova Build | Projektet{% endblock %}
+
+{% block content %}
+<section class="page-hero small-hero">
+  <div class="container text-center">
+    <span class="section-kicker">Projektet tona</span>
+    <h1>Rezidenca, ambiente biznesi dhe zhvillime urbane</h1>
+  </div>
+</section>
+
+<main class="section-padding bg-light-custom">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">Të gjitha projektet</h2>
+      {% if user.is_staff %}
+        <a href="{% url 'project-create' %}" class="btn btn-gold">+ Shto projekt</a>
+      {% endif %}
+    </div>
+
+    {% if projects %}
+      <div class="row g-4">
+        {% for project in projects %}
+          <div class="col-md-6 col-xl-4">
+            <div class="project-card detailed-card h-100">
+              {% if project.cover %}
+                <img src="{{ project.cover.url }}" alt="{{ project.name }}" class="img-fluid rounded mb-3" style="height: 220px; object-fit: cover; width: 100%;">
+              {% endif %}
+              <div class="project-badge {% if project.status == 'perfunduar' %}badge-done{% elif project.status == 'ne_ndertim' or project.status == 'ne_zhvillim' %}badge-progress{% endif %}">
+                {{ project.get_status_display }}
+              </div>
+              <div class="project-body">
+                <h3>{{ project.name }}</h3>
+                <p>{{ project.description|truncatechars:140 }}</p>
+                <ul class="project-meta">
+                  <li>Lokacion: {{ project.location }}</li>
+                  <li>Tipologji: {{ project.get_category_display }}</li>
+                  <li>Vit: {{ project.year }}</li>
+                  <li>
+                    Vlerësimi:
+                    {% if project.rating_count %}
+                      {{ project.avg_rating|floatformat:1 }}/5 ({{ project.rating_count }} vlerësime)
+                    {% else %}
+                      Nuk ka vlerësime ende
+                    {% endif %}
+                  </li>
+                </ul>
+                <a href="{% url 'project-detail' project.pk %}" class="project-link">Shiko detajet →</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="alert alert-info">
+        Asnjë projekt nuk është shtuar ende.
+        {% if user.is_staff %}
+          <a href="{% url 'project-create' %}" class="alert-link">Shto projektin e parë.</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</main>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "nova/base.html" %}
+
+{% block title %}Nova Build | Kreu{% endblock %}
+
+{% block content %}
+<header class="hero-section">
+  <div class="container">
+    <div class="row align-items-center min-vh-100 py-5">
+      <div class="col-lg-7">
+        <span class="eyebrow">25 vite duke ndërtuar të ardhmen</span>
+        <h1 class="display-4 fw-bold mt-3 mb-4">Rezidenca dhe hapësira biznesi me stil modern urban</h1>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="{% url 'project-list' %}" class="btn btn-gold btn-lg">Shiko projektet</a>
+          <a href="{% url 'contact' %}" class="btn btn-outline-light btn-lg">Na kontakto</a>
+        </div>
+      </div>
+      <div class="col-lg-5 mt-5 mt-lg-0">
+        <div class="hero-card">
+          <h2 class="h4 mb-3">Mundësi investimi</h2>
+          <p class="mb-4">Bëhu pjesë e listës sonë dhe njoftohu i pari për rezidenca të reja, ambiente biznesi dhe oferta premium.</p>
+          <a href="{% url 'contact' %}" class="btn btn-light w-100">Kërko informacion</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Featured projects pulled from the DB -->
+<section class="section-padding bg-white">
+  <div class="container">
+    <div class="section-heading text-center mx-auto">
+      <span class="section-kicker">Projektet</span>
+      <h2>Zbulo projektet tona rezidenciale dhe ato të dedikuara biznesit</h2>
+      <p>Ndërtim modern, vendodhje strategjike dhe fokus i vazhdueshëm te cilësia, funksionaliteti dhe estetika.</p>
+    </div>
+
+    <div class="row g-4 mt-4">
+      {% for project in featured_projects %}
+        <div class="col-md-6 col-xl-4">
+          <div class="project-card h-100">
+            <div class="project-badge {% if project.status == 'perfunduar' %}badge-done{% elif project.status == 'ne_ndertim' or project.status == 'ne_zhvillim' %}badge-progress{% endif %}">
+              {{ project.get_status_display }}
+            </div>
+            <div class="project-body">
+              <h3>{{ project.name }}</h3>
+              <p>{{ project.description|truncatechars:140 }}</p>
+              <a href="{% url 'project-detail' project.pk %}" class="project-link">Më shumë →</a>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12">
+          <div class="alert alert-info">
+            Asnjë projekt nuk është ngarkuar ende.
+            {% if user.is_staff %}
+              <a href="{% url 'project-create' %}" class="alert-link">Shto projektin e parë.</a>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="{% url 'project-list' %}" class="btn btn-outline-dark">Shiko të gjitha projektet</a>
+    </div>
+  </div>
+</section>
+
+<section class="section-padding philosophy-section">
+  <div class="container">
+    <div class="section-heading text-center mx-auto">
+      <span class="section-kicker">Filozofia jonë</span>
+      <h2>Tre kollonat e suksesit tonë</h2>
+      <p>Strukturë e qartë, risi në konceptim dhe respekt për natyrën në çdo projekt të ri.</p>
+    </div>
+    <div class="row g-4 mt-4">
+      <div class="col-md-4"><div class="icon-card h-100"><div class="icon-circle">01</div><h3>Natyra është zgjedhja jonë</h3><p>Projektet tona kërkojnë balancë mes arkitekturës moderne dhe mjedisit përreth.</p></div></div>
+      <div class="col-md-4"><div class="icon-card h-100"><div class="icon-circle">02</div><h3>Kreativitet dhe risi</h3><p>Çdo ndërtesë ndërtohet mbi një ide të fortë arkitekturore dhe zgjidhje praktike.</p></div></div>
+      <div class="col-md-4"><div class="icon-card h-100"><div class="icon-circle">03</div><h3>Qasje ekologjike</h3><p>Përdorim materiale dhe teknologji që mbështesin komoditetin, kursimin dhe qëndrueshmërinë.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section section-padding">
+  <div class="container text-center">
+    <span class="section-kicker text-light">Kontakt</span>
+    <h2 class="text-white">Le të ndërtojmë projektin tënd të ardhshëm</h2>
+    <p class="text-white-50 mx-auto cta-text">Na kontakto për informacion shtesë, prezantim projekti ose një takim të shpejtë informues.</p>
+    <a href="{% url 'contact' %}" class="btn btn-gold btn-lg mt-3">Na shkruaj</a>
+  </div>
+</section>
+{% endblock %}

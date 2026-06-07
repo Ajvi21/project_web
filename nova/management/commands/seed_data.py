@@ -100,6 +100,7 @@ FAQS = [
         ),
         'is_featured': True,
     },
+    
     {
         'question': "Si mund t'ju kontaktoj?",
         'keywords': 'kontakt,telefon,email,takim,rezervo,adresa',
@@ -109,6 +110,7 @@ FAQS = [
         ),
         'is_featured': True,
     },
+    
     {
         'question': 'A është faqja responsive?',
         'keywords': 'responsive,telefon,mobile,celular,tablet',

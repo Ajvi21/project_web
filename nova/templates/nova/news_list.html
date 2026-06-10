@@ -14,18 +14,20 @@
   <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h2 class="mb-0">Të gjitha lajmet</h2>
-      {% if user.is_authenticated %}
+      {% if user.is_staff %}
         <a href="{% url 'news-create' %}" class="btn btn-gold">+ Shto lajm</a>
       {% endif %}
     </div>
 
     {% for post in posts %}
-      <div class="content-panel mb-3">
-        <h3><a href="{% url 'news-detail' post.pk %}" class="text-dark">{{ post.title }}</a></h3>
-        <p class="text-muted small mb-2">Nga {{ post.author }} • {{ post.date_posted|date:"d M Y, H:i" }}</p>
-        <p>{{ post.content|truncatechars:240 }}</p>
-        <a href="{% url 'news-detail' post.pk %}" class="project-link">Lexo më shumë →</a>
-      </div>
+      <a href="{% url 'news-detail' post.pk %}" class="news-card-link">
+        <div class="content-panel mb-3 news-card">
+          <h3 class="news-card-title">{{ post.title }}</h3>
+          <p class="text-muted small mb-2">{{ post.date_posted|date:"d M Y, H:i" }}</p>
+          <p class="mb-2">{{ post.content|truncatechars:180 }}</p>
+          <span class="project-link">Lexo më shumë →</span>
+        </div>
+      </a>
     {% empty %}
       <div class="alert alert-info">Asnjë lajm i publikuar ende.</div>
     {% endfor %}

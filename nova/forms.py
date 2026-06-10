@@ -16,7 +16,7 @@ from .models import (
     ProjectReview,
 )
 
-PROJECT_STAR_CHOICES = [(i, f'{i} Yll{"" if i == 1 else "e"}') for i in range(1, 6)]
+PROJECT_STAR_CHOICES = [(i, f'{i} {"Yll" if i == 1 else "Yje"}') for i in range(1, 6)]
 
 class NewsPostForm(forms.ModelForm):
     class Meta:

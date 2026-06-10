@@ -58,6 +58,22 @@ def about(request):
 
 
 # =============================================================================
+# Access control mixin
+# =============================================================================
+
+class StaffRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """Allows only staff users (is_staff=True) to access the view (Lesson 06).
+
+    Anonymous users are redirected to the login page; logged-in non-staff
+    users get a 403 Forbidden because of raise_exception=True.
+    """
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.is_staff
+
+
+# =============================================================================
 # News (mirrors PostListView / PostDetailView / PostCreateView / ... )
 # =============================================================================
 
@@ -79,7 +95,7 @@ class NewsDetailView(DetailView):
         return context
 
 
-class NewsCreateView(LoginRequiredMixin, CreateView):
+class NewsCreateView(StaffRequiredMixin, CreateView):
     model = NewsPost
     form_class = NewsPostForm
     template_name = 'nova/news_form.html'
@@ -95,22 +111,15 @@ class NewsCreateView(LoginRequiredMixin, CreateView):
         return reverse('news-detail', kwargs={'pk': self.object.pk})
 
 
-class NewsUpdateView(LoginRequiredMixin, UpdateView):
+class NewsUpdateView(StaffRequiredMixin, UpdateView):
     model = NewsPost
     form_class = NewsPostForm
     template_name = 'nova/news_form.html'
 
-    def get_queryset(self):
-        # Only the author can update their own news post.
-        return super().get_queryset().filter(author=self.request.user)
 
-
-class NewsDeleteView(LoginRequiredMixin, DeleteView):
+class NewsDeleteView(StaffRequiredMixin, DeleteView):
     model = NewsPost
     template_name = 'nova/news_confirm_delete.html'
-
-    def get_queryset(self):
-        return super().get_queryset().filter(author=self.request.user)
 
     def get_success_url(self):
         messages.success(self.request, 'Lajmi u fshi me sukses.')
@@ -148,14 +157,6 @@ def delete_news_comment(request, pk):
 # =============================================================================
 # Projects (mirrors the Movie CRUD from Lesson 07)
 # =============================================================================
-
-class StaffRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-    """Allows only staff users to access the view (Lesson 06)."""
-    raise_exception = True
-
-    def test_func(self):
-        return self.request.user.is_staff
-
 
 class ProjectListView(ListView):
     """Public listing of all Nova Build projects with rating aggregates."""

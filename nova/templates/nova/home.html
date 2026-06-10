@@ -37,16 +37,18 @@
     <div class="row g-4 mt-4">
       {% for project in featured_projects %}
         <div class="col-md-6 col-xl-4">
-          <div class="project-card h-100">
-            <div class="project-badge {% if project.status == 'perfunduar' %}badge-done{% elif project.status == 'ne_ndertim' or project.status == 'ne_zhvillim' %}badge-progress{% endif %}">
-              {{ project.get_status_display }}
+          <a href="{% url 'project-detail' project.pk %}" class="project-card-link">
+            <div class="project-card h-100">
+              <div class="project-badge {% if project.status == 'perfunduar' %}badge-done{% elif project.status == 'ne_ndertim' or project.status == 'ne_zhvillim' %}badge-progress{% endif %}">
+                {{ project.get_status_display }}
+              </div>
+              <div class="project-body">
+                <h3>{{ project.name }}</h3>
+                <p>{{ project.description|truncatechars:140 }}</p>
+                <span class="project-link">Më shumë →</span>
+              </div>
             </div>
-            <div class="project-body">
-              <h3>{{ project.name }}</h3>
-              <p>{{ project.description|truncatechars:140 }}</p>
-              <a href="{% url 'project-detail' project.pk %}" class="project-link">Më shumë →</a>
-            </div>
-          </div>
+          </a>
         </div>
       {% empty %}
         <div class="col-12">
